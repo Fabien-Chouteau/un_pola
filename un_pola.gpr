@@ -1,0 +1,24 @@
+with "drivers/config.gpr";
+with "drivers/boards/openmv2.gpr";
+
+project Un_Pola is
+
+   --  OpenMV2 runtime is derived from smt32f429-disco with
+   --
+   --  HSE_Clock_Frequency : constant := 12_000_000;
+   --
+   --  in bsp/s-bbopa.ads
+   for Runtime ("Ada") use Config.RTS & "-openmv2";
+
+   for Target use "arm-eabi";
+   for Source_Dirs use ("src");
+
+   for Languages use ("Ada");
+   for Object_Dir use "obj\";
+   for Main use ("main.adb");
+
+   package Compiler renames Config.Compiler;
+   package Builder renames Config.Builder;
+
+ end Un_Pola;
+
