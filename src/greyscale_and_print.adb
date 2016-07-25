@@ -65,6 +65,10 @@ package body Greyscale_And_Print is
                Grey := Threshold_6 - 1;
             elsif Grey < Threshold_7 then
                Grey := Threshold_7 - 1;
+            elsif Grey < Threshold_8 then
+               Grey := Threshold_8 - 1;
+            elsif Grey < Threshold_9 then
+               Grey := Threshold_9 - 1;
             else
                Grey := Byte'Last;
             end if;
@@ -124,19 +128,34 @@ package body Greyscale_And_Print is
                BM (X * 3 + 1, Y * 3 + 2) := True;
             elsif Grey < Threshold_3 then
                --  -------
-               --  |X| |X|
+               --  | |X|X|
                --  -------
-               --  |X| |X|
+               --  |X|X|X|
                --  -------
-               --  |X| |X|
+               --  |X|X| |
                --  -------
                BM (X * 3 + 2, Y * 3) := True;
                BM (X * 3, Y * 3 + 2) := True;
-               BM (X * 3, Y * 3) := True;
+               BM (X * 3 + 1, Y * 3) := True;
                BM (X * 3, Y * 3 + 1) := True;
                BM (X * 3 + 2, Y * 3 + 1) := True;
-               BM (X * 3 + 2, Y * 3 + 2) := True;
+               BM (X * 3 + 1, Y * 3 + 2) := True;
+               BM (X * 3 + 1, Y * 3 + 1) := True;
             elsif Grey < Threshold_4 then
+               --  -------
+               --  | |X|X|
+               --  -------
+               --  |X| |X|
+               --  -------
+               --  |X|X| |
+               --  -------
+               BM (X * 3 + 2, Y * 3) := True;
+               BM (X * 3, Y * 3 + 2) := True;
+               BM (X * 3 + 1, Y * 3) := True;
+               BM (X * 3, Y * 3 + 1) := True;
+               BM (X * 3 + 2, Y * 3 + 1) := True;
+               BM (X * 3 + 1, Y * 3 + 2) := True;
+            elsif Grey < Threshold_5 then
                --  -------
                --  |X| |X|
                --  -------
@@ -149,7 +168,19 @@ package body Greyscale_And_Print is
                BM (X * 3, Y * 3 + 2) := True;
                BM (X * 3, Y * 3) := True;
                BM (X * 3 + 2, Y * 3 + 2) := True;
-            elsif Grey < Threshold_5 then
+            elsif Grey < Threshold_6 then
+               --  -------
+               --  |X| |X|
+               --  -------
+               --  | | | |
+               --  -------
+               --  |X| |X|
+               --  -------
+               BM (X * 3 + 1, Y * 3 + 1) := True;
+               BM (X * 3 + 2, Y * 3) := True;
+               BM (X * 3, Y * 3 + 2) := True;
+               BM (X * 3, Y * 3) := True;
+            elsif Grey < Threshold_7 then
                --  -------
                --  | | |X|
                --  -------
@@ -160,7 +191,7 @@ package body Greyscale_And_Print is
                BM (X * 3 + 1, Y * 3 + 1) := True;
                BM (X * 3 + 2, Y * 3) := True;
                BM (X * 3, Y * 3 + 2) := True;
-            elsif Grey < Threshold_6 then
+            elsif Grey < Threshold_8 then
                --  -------
                --  | | |X|
                --  -------
@@ -170,7 +201,7 @@ package body Greyscale_And_Print is
                --  -------
                BM (X * 3 + 2, Y * 3) := True;
                BM (X * 3, Y * 3 + 2) := True;
-            elsif Grey < Threshold_7 then
+            elsif Grey < Threshold_9 then
                --  -------
                --  | | | |
                --  -------
