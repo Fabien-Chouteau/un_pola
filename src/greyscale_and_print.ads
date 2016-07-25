@@ -1,7 +1,5 @@
 with HAL.Bitmap;
 with HAL;
-with AdaFruit.Thermal_Printer; use AdaFruit.Thermal_Printer;
-with OpenMV.LCD_Shield;
 
 package Greyscale_And_Print is
 
@@ -15,8 +13,11 @@ package Greyscale_And_Print is
    procedure Print (Pict : HAL.Bitmap.Bitmap_Buffer'Class)
      with Pre => Initialized;
 
-
-   BM : Thermal_Printer_Bitmap (0 .. (OpenMV.LCD_Shield.Width * 3) - 1,
-                                0 .. (OpenMV.LCD_Shield.Height * 3) - 1);
-
+   Threshold_1 : constant := 32;
+   Threshold_2 : constant := 64;
+   Threshold_3 : constant := 96;
+   Threshold_4 : constant := 128;
+   Threshold_5 : constant := 160;
+   Threshold_6 : constant := 192;
+   Threshold_7 : constant := 224;
 end Greyscale_And_Print;

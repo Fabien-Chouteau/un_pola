@@ -1,4 +1,3 @@
-with Ada.Real_Time; use Ada.Real_Time;
 with OpenMV;
 with OpenMV.LCD_Shield;
 with OpenMV.Sensor;
@@ -16,17 +15,17 @@ begin
    OpenMV.Initialize_Shield_USART (19_200);
    Greyscale_And_Print.Initialize;
 
-   --  Take a snapshot
-   OpenMV.Sensor.Snapshot (OpenMV.LCD_Shield.Get_Bitmap);
+   loop
+      --  Take a snapshot
+      OpenMV.Sensor.Snapshot (OpenMV.LCD_Shield.Get_Bitmap);
 
-   --  Convert it to grayscale
-   Greyscale_And_Print.To_Greyscale (OpenMV.LCD_Shield.Get_Bitmap);
+      --  Convert it to grayscale
+      Greyscale_And_Print.To_Greyscale (OpenMV.LCD_Shield.Get_Bitmap);
 
-   --  Show it on the screen
-   OpenMV.LCD_Shield.Display;
+      --  Show it on the screen
+      OpenMV.LCD_Shield.Display;
 
-   --  Print it
-   Print (OpenMV.LCD_Shield.Get_Bitmap);
-
-   delay until Time_Last;
+      --  Print it
+      --  Print (OpenMV.LCD_Shield.Get_Bitmap);
+   end loop;
 end Main;
