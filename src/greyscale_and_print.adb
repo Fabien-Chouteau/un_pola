@@ -45,32 +45,35 @@ package body Greyscale_And_Print is
    -- To_Greyscale --
    ------------------
 
-   procedure To_Greyscale (BM : HAL.Bitmap.Bitmap_Buffer'Class) is
+   procedure To_Greyscale (BM             : HAL.Bitmap.Bitmap_Buffer'Class;
+                           Apply_Threshol : Boolean := False) is
       Grey : Byte;
    begin
       for Row in 0 .. BM.Width loop
          for Column in 0 .. BM.Height loop
             Grey := Grey_Scale (BM.Get_Pixel (Row, Column));
-            if Grey < Threshold_1 then
-               Grey := Threshold_1 - 1;
-            elsif Grey < Threshold_2 then
-               Grey := Threshold_2 - 1;
-            elsif Grey < Threshold_3 then
-               Grey := Threshold_3 - 1;
-            elsif Grey < Threshold_4 then
-               Grey := Threshold_4 - 1;
-            elsif Grey < Threshold_5 then
-               Grey := Threshold_5 - 1;
-            elsif Grey < Threshold_6 then
-               Grey := Threshold_6 - 1;
-            elsif Grey < Threshold_7 then
-               Grey := Threshold_7 - 1;
-            elsif Grey < Threshold_8 then
-               Grey := Threshold_8 - 1;
-            elsif Grey < Threshold_9 then
-               Grey := Threshold_9 - 1;
-            else
-               Grey := Byte'Last;
+            if Apply_Threshol then
+               if Grey < Threshold_1 then
+                  Grey := Threshold_1 - 1;
+               elsif Grey < Threshold_2 then
+                  Grey := Threshold_2 - 1;
+               elsif Grey < Threshold_3 then
+                  Grey := Threshold_3 - 1;
+               elsif Grey < Threshold_4 then
+                  Grey := Threshold_4 - 1;
+               elsif Grey < Threshold_5 then
+                  Grey := Threshold_5 - 1;
+               elsif Grey < Threshold_6 then
+                  Grey := Threshold_6 - 1;
+               elsif Grey < Threshold_7 then
+                  Grey := Threshold_7 - 1;
+               elsif Grey < Threshold_8 then
+                  Grey := Threshold_8 - 1;
+               elsif Grey < Threshold_9 then
+                  Grey := Threshold_9 - 1;
+               else
+                  Grey := Byte'Last;
+               end if;
             end if;
 
             BM.Set_Pixel (Row, Column, (255, Grey, Grey, Grey));
