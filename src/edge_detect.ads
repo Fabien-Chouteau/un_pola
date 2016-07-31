@@ -1,10 +1,10 @@
 with HAL.Bitmap;
+with OpenMV.LCD_Shield;
 
 package Edge_Detect is
-   procedure Sobel (Input  : HAL.Bitmap.Bitmap_Buffer'Class;
-                    Output : HAL.Bitmap.Bitmap_Buffer'Class)
+   procedure Sobel (BM  : HAL.Bitmap.Bitmap_Buffer'Class)
      with Pre =>
-         Input.Width = Output.Width
+         BM.Width = OpenMV.LCD_Shield.Width
        and
-         Input.Height = Output.Height;
+         BM.Height = OpenMV.LCD_Shield.Height;
 end Edge_Detect;

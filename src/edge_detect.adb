@@ -9,65 +9,58 @@ package body Edge_Detect is
      Ada.Numerics.Generic_Elementary_Functions (Float);
    use Float_Funcs;
 
+   subtype Grad_Type is Float;
+
+   type Grad_Matrix is array (Integer range  <>, Integer range <>) of
+     Grad_Type;
+
+   Temp_Grad : Grad_Matrix (1 .. OpenMV.LCD_Shield.Width - 2,
+                            1 .. OpenMV.LCD_Shield.Height - 2);
+
    -----------
    -- Sobel --
    -----------
 
-   procedure Sobel (Input  : HAL.Bitmap.Bitmap_Buffer'Class;
-                    Output : HAL.Bitmap.Bitmap_Buffer'Class) is
+   procedure Sobel (BM : HAL.Bitmap.Bitmap_Buffer'Class) is
 
-      subtype Grad_Type is Float;
 
-      Kernel_H : constant array (-1 .. 1, -1 .. 1) of Float :=
-        ((-1.0, 0.0, 1.0),
-         (-2.0, 0.0, 2.0),
-         (-1.0, 0.0, 1.0));
-      Kernel_V : constant array (-1 .. 1, -1 .. 1) of Float :=
-        ((-1.0, 0.0, 1.0),
-         (-2.0, 0.0, 2.0),
-         (-1.0, 0.0, 1.0));
+      Kernel : constant array (-1 .. 1, -1 .. 1) of Grad_Type :=
+        ((-1.0,  -1.0, -1.0),
+         (-1.0,  10.0, -1.0),
+         (-1.0,  -1.0, -1.0));
 
-      Val_H, Val_V, Gradient, Min, Max : Grad_Type;
+      Val, Gradient, Min, Max : Grad_Type;
       Pix : Byte;
+
+
    begin
       Min := Grad_Type'Last;
       Max := Grad_Type'First;
 
-      for X in 1 .. Input.Width - 2 loop
-         for Y in 1 .. Input.Height - 2 loop
-            Val_V := 0.0;
-            Val_H := 0.0;
-            for KX in Kernel_V'Range (1) loop
-               for KY in Kernel_V'Range (2) loop
-                  Pix := Input.Get_Pixel (X + KX, Y + KY).Red;
-                  Val_V := Val_V + Grad_Type (Pix) * Kernel_V (KX, KY);
-                  Val_H := Val_H + Grad_Type (Pix) * Kernel_H (KX, KY);
+      for X in Temp_Grad'Range (1) loop
+         for Y in Temp_Grad'Range (2) loop
+            Val := 0.0;
+            for KX in Kernel'Range (1) loop
+               for KY in Kernel'Range (2) loop
+                  Pix := BM.Get_Pixel (X + KX, Y + KY).Red;
+                  Val := Val + Grad_Type (Pix) * Kernel (KX, KY);
                end loop;
             end loop;
 
-            Gradient := (abs Val_V) + abs (Val_H);
+            Gradient := abs Val;
+            Temp_Grad (X, Y) := Gradient;
             Min := Grad_Type'Min (Min, Gradient);
             Max := Grad_Type'Max (Max, Gradient);
          end loop;
       end loop;
 
-      for X in 1 .. Input.Width - 2 loop
-         for Y in 1 .. Input.Height - 2 loop
-            Val_V := 0.0;
-            Val_H := 0.0;
-            for KX in Kernel_V'Range (1) loop
-               for KY in Kernel_V'Range (2) loop
-                  Pix := Input.Get_Pixel (X + KX, Y + KY).Red;
-                  Val_V := Val_V + Grad_Type (Pix) * Kernel_V (KX, KY);
-                  Val_H := Val_V + Grad_Type (Pix) * Kernel_H (KX, KY);
-               end loop;
-            end loop;
-
-            Gradient := (abs Val_V) + abs (Val_H);
+      for X in Temp_Grad'Range (1) loop
+         for Y in Temp_Grad'Range (2) loop
+            Gradient := Temp_Grad (X, Y);
 
             Gradient := (Gradient - Min) / (Max - Min);
 
-            --  Gradient := (1.0 - Gradient);
+            Gradient := (1.0 - Gradient);
 
             Gradient := Gradient * 255.0;
 
@@ -100,13 +93,13 @@ package body Edge_Detect is
                end if;
             end if;
 
---              if Gradient < 0.5 then
+--              if Gradient < 0.25 then
 --                 Pix := 255;
 --              else
 --                 Pix := 0;
 --              end if;
 
-            Output.Set_Pixel (X, Y, (Alpha => 255, others => Pix));
+            BM.Set_Pixel (X, Y, (Alpha => 255, others => Pix));
          end loop;
       end loop;
    end Sobel;
