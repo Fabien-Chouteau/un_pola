@@ -26,6 +26,10 @@ See more at: http://blog.adacore.com/make-with-ada-diy-instant-camera#sthash.d0L
 - Open the project file `un_pola.gpr`
 - Use the "Build all" button to compile
 
+Alternatively, you can build directly on the command-line:
+
+    $ gprbuild -Pun_pola -XRTS=ravenscar-full
+
 ## Flash the OpenMV
 
 - You will need to connect the OpenMV module to and st-link debugger. Unfortunatly, I don't think this is documented anywhere. I will try to take care of it.
