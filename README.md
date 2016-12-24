@@ -23,7 +23,7 @@ See more at: http://blog.adacore.com/make-with-ada-diy-instant-camera#sthash.d0L
 
 - Download and install the [GNAT for ARM package](http://libre.adacore.com/download/configurations)
 - Start GNAT Programing Studio
-- Open the project file up_pola.gpr
+- Open the project file `un_pola.gpr`
 - Use the "Build all" button to compile
 
 ## Flash the OpenMV
