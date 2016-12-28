@@ -5,11 +5,30 @@ See more at: http://blog.adacore.com/make-with-ada-diy-instant-camera#sthash.d0L
 
 ##  Build instructions
 
-- Make sure to get all the Git submodules "$ git submodules update"
+- Make sure to get all the Git submodules:
+
+    ```shell
+    # Get Ada_Drivers_Library for un_pola
+    $ git submodule init
+    $ git submodule update
+
+    # Get embedded-runtimes for Ada_Drivers_Library
+    $ cd drivers
+    $ git submodule init
+    $ git submodule update
+
+    # Build embedded-runtimes
+    $ make -C drivers/embedded-runtimes
+    ```
+
 - Download and install the [GNAT for ARM package](http://libre.adacore.com/download/configurations)
 - Start GNAT Programing Studio
-- Open the project file up_pola.gpr
+- Open the project file `un_pola.gpr`
 - Use the "Build all" button to compile
+
+Alternatively, you can build directly on the command-line:
+
+    $ gprbuild -Pun_pola -XRTS=ravenscar-full
 
 ## Flash the OpenMV
 
