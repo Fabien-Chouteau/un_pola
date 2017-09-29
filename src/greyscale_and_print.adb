@@ -1,6 +1,5 @@
 with HAL; use HAL;
 with HAL.Bitmap; use HAL.Bitmap;
-with Interfaces; use Interfaces;
 with AdaFruit.Thermal_Printer; use AdaFruit.Thermal_Printer;
 with OpenMV.LCD_Shield; use OpenMV.LCD_Shield;
 with Ravenscar_Time;
@@ -8,12 +7,13 @@ with Ravenscar_Time;
 package body Greyscale_And_Print is
 
 
-   TP : TP_Device (OpenMV.Get_Shield_USART, Ravenscar_Time.Get_Delays);
+   TP : TP_Device (OpenMV.Get_Shield_USART, Ravenscar_Time.Delays);
    Is_Initialized : Boolean := False;
    BM : Thermal_Printer_Bitmap (0 .. (OpenMV.LCD_Shield.Width * 3) - 1,
                                 0 .. (OpenMV.LCD_Shield.Height * 3) - 1);
 
-   function Grey_Scale (C : Bitmap_Color) return Byte;
+   function Grey_Scale (C : Bitmap_Color) return UInt8;
+
    ----------------
    -- Initialize --
    ----------------
@@ -31,12 +31,12 @@ package body Greyscale_And_Print is
    -- Grey_Scale --
    ----------------
 
-   function Grey_Scale (C : Bitmap_Color) return Byte is
+   function Grey_Scale (C : Bitmap_Color) return UInt8 is
       R_Lin : constant Float := Float (C.Red) / 255.0;
       G_Lin : constant Float := Float (C.Green) / 255.0;
       B_Lin : constant Float := Float (C.Blue) / 255.0;
    begin
-      return Byte ((0.2989 * R_Lin +
+      return UInt8 ((0.2989 * R_Lin +
                      0.5870 * G_Lin +
                        0.1140 * B_Lin) * 255.0);
    end Grey_Scale;
@@ -45,13 +45,13 @@ package body Greyscale_And_Print is
    -- To_Greyscale --
    ------------------
 
-   procedure To_Greyscale (BM             : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure To_Greyscale (BM             : in out HAL.Bitmap.Bitmap_Buffer'Class;
                            Apply_Threshol : Boolean := False) is
-      Grey : Byte;
+      Grey : UInt8;
    begin
       for Row in 0 .. BM.Width loop
          for Column in 0 .. BM.Height loop
-            Grey := Grey_Scale (BM.Get_Pixel (Row, Column));
+            Grey := Grey_Scale (BM.Pixel ((Row, Column)));
             if Apply_Threshol then
                if Grey < Threshold_1 then
                   Grey := Threshold_1 - 1;
@@ -72,11 +72,11 @@ package body Greyscale_And_Print is
                elsif Grey < Threshold_9 then
                   Grey := Threshold_9 - 1;
                else
-                  Grey := Byte'Last;
+                  Grey := UInt8'Last;
                end if;
             end if;
 
-            BM.Set_Pixel (Row, Column, (255, Grey, Grey, Grey));
+            BM.Set_Pixel ((Row, Column), (255, Grey, Grey, Grey));
          end loop;
       end loop;
    end To_Greyscale;
@@ -86,14 +86,14 @@ package body Greyscale_And_Print is
    -----------
 
    procedure Print (Pict : HAL.Bitmap.Bitmap_Buffer'Class) is
-      Grey : Byte;
+      Grey : UInt8;
    begin
       for Elt of BM loop
          Elt := False;
       end loop;
       for X in 0 .. Pict.Width - 1 loop
          for Y in 0 .. Pict.Height - 1 loop
-            Grey := Pict.Get_Pixel (X, Y).Red;
+            Grey := Pict.Pixel ((X, Y)).Red;
             if Grey < Threshold_1 then
                --  -------
                --  |X|X|X|

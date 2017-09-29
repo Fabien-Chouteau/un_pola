@@ -8,7 +8,7 @@ package Greyscale_And_Print is
 
    function Initialized return Boolean;
 
-   procedure To_Greyscale (BM             : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure To_Greyscale (BM             : in out HAL.Bitmap.Bitmap_Buffer'Class;
                            Apply_Threshol : Boolean := False);
 
    procedure Print (Pict : HAL.Bitmap.Bitmap_Buffer'Class)

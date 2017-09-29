@@ -1,5 +1,4 @@
 with HAL; use HAL;
-with Interfaces; use Interfaces;
 with Ada.Numerics.Generic_Elementary_Functions;
 with Greyscale_And_Print; use Greyscale_And_Print;
 
@@ -21,7 +20,7 @@ package body Edge_Detect is
    -- Sobel --
    -----------
 
-   procedure Sobel (BM : HAL.Bitmap.Bitmap_Buffer'Class) is
+   procedure Sobel (BM : in out HAL.Bitmap.Bitmap_Buffer'Class) is
 
 
       Kernel : constant array (-1 .. 1, -1 .. 1) of Grad_Type :=
@@ -30,7 +29,7 @@ package body Edge_Detect is
          (-1.0,  -1.0, -1.0));
 
       Val, Gradient, Min, Max : Grad_Type;
-      Pix : Byte;
+      Pix : UInt8;
 
 
    begin
@@ -42,7 +41,7 @@ package body Edge_Detect is
             Val := 0.0;
             for KX in Kernel'Range (1) loop
                for KY in Kernel'Range (2) loop
-                  Pix := BM.Get_Pixel (X + KX, Y + KY).Red;
+                  Pix := BM.Pixel ((X + KX, Y + KY)).Red;
                   Val := Val + Grad_Type (Pix) * Kernel (KX, KY);
                end loop;
             end loop;
@@ -64,12 +63,12 @@ package body Edge_Detect is
 
             Gradient := Gradient * 255.0;
 
-            if Gradient < Grad_Type (Byte'First) then
-               Pix := Byte'First;
-            elsif Gradient > Grad_Type (Byte'Last) then
-               Pix := Byte'Last;
+            if Gradient < Grad_Type (UInt8'First) then
+               Pix := UInt8'First;
+            elsif Gradient > Grad_Type (UInt8'Last) then
+               Pix := UInt8'Last;
             else
-               Pix := Byte (Gradient);
+               Pix := UInt8 (Gradient);
                if Pix < Threshold_1 then
                   Pix := Threshold_1 - 1;
                elsif Pix < Threshold_2 then
@@ -89,7 +88,7 @@ package body Edge_Detect is
                elsif Pix < Threshold_9 then
                   Pix := Threshold_9 - 1;
                else
-                  Pix := Byte'Last;
+                  Pix := UInt8'Last;
                end if;
             end if;
 
@@ -99,7 +98,7 @@ package body Edge_Detect is
 --                 Pix := 0;
 --              end if;
 
-            BM.Set_Pixel (X, Y, (Alpha => 255, others => Pix));
+            BM.Set_Pixel ((X, Y), (Alpha => 255, others => Pix));
          end loop;
       end loop;
    end Sobel;
