@@ -1,16 +1,23 @@
-with HAL; use HAL;
-with HAL.Bitmap; use HAL.Bitmap;
+with HAL;                      use HAL;
+with HAL.Bitmap;               use HAL.Bitmap;
 with AdaFruit.Thermal_Printer; use AdaFruit.Thermal_Printer;
-with OpenMV.LCD_Shield; use OpenMV.LCD_Shield;
+with OpenMV.LCD_Shield;        use OpenMV.LCD_Shield;
 with Ravenscar_Time;
+with Memory_Mapped_Bitmap;     use Memory_Mapped_Bitmap;
+with Dither;
 
 package body Greyscale_And_Print is
 
 
    TP : TP_Device (OpenMV.Get_Shield_USART, Ravenscar_Time.Delays);
    Is_Initialized : Boolean := False;
-   BM : Thermal_Printer_Bitmap (0 .. (OpenMV.LCD_Shield.Width * 3) - 1,
-                                0 .. (OpenMV.LCD_Shield.Height * 3) - 1);
+
+   Printer_Buffer_Width  : constant Natural := OpenMV.LCD_Shield.Width * 3;
+   Printer_Buffer_Height : constant Natural := OpenMV.LCD_Shield.Height * 3;
+   Printer_Buffer_Data   : Thermal_Printer_Bitmap (0 .. Printer_Buffer_Width - 1,
+                                 0 .. Printer_Buffer_Height - 1);
+   M1_Buffer : aliased Memory_Mapped_Bitmap_Buffer;
+
 
    function Grey_Scale (C : Bitmap_Color) return UInt8;
 
@@ -20,6 +27,13 @@ package body Greyscale_And_Print is
 
    procedure Initialize is
    begin
+      M1_Buffer.Addr := Printer_Buffer_Data'Address;
+      M1_Buffer.Actual_Color_Mode := M_1;
+      M1_Buffer.Actual_Width := Printer_Buffer_Width;
+      M1_Buffer.Actual_Height := Printer_Buffer_Height;
+      M1_Buffer.Currently_Swapped := False;
+      M1_Buffer.Native_Source := 0;
+
       TP.Wake;
       TP.Reset;
       Is_Initialized := True;
@@ -81,11 +95,12 @@ package body Greyscale_And_Print is
       end loop;
    end To_Greyscale;
 
-   -----------
-   -- Print --
-   -----------
+   --------------------------
+   -- Print_With_Grayscale --
+   --------------------------
 
-   procedure Print (Pict : HAL.Bitmap.Bitmap_Buffer'Class) is
+   procedure Print_With_Grayscale (Pict : HAL.Bitmap.Bitmap_Buffer'Class) is
+      BM   : Thermal_Printer_Bitmap renames Printer_Buffer_Data;
       Grey : UInt8;
    begin
       for Elt of BM loop
@@ -225,8 +240,23 @@ package body Greyscale_And_Print is
             end if;
          end loop;
       end loop;
+
       TP.Print ("Make with Ada!" & ASCII.LF);
       TP.Print_Bitmap (BM);
       TP.Feed (3);
-   end Print;
+   end Print_With_Grayscale;
+
+   --------------------------
+   -- Print_With_Dithering --
+   --------------------------
+
+   procedure Print_With_Dithering (Pict : HAL.Bitmap.Bitmap_Buffer'Class) is
+   begin
+
+      Dither (Pict, M1_Buffer);
+
+      TP.Print ("Make with Ada!" & ASCII.LF);
+      TP.Print_Bitmap (M1_Buffer'Access);
+      TP.Feed (3);
+   end Print_With_Dithering;
 end Greyscale_And_Print;

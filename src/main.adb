@@ -10,7 +10,6 @@ pragma Unreferenced (Last_Chance_Handler);
 
 with STM32.GPIO; use STM32.GPIO;
 with STM32.Device; use STM32.Device;
-with Dither;
 
 procedure Main is
 
@@ -58,10 +57,6 @@ begin
 
 
             if Mode_Button.Set then
-               --  Apply dithering
-               Dither (OpenMV.LCD_Shield.Bitmap.all);
-            else
-
                --  Convert it to grayscale with threshold
                Greyscale_And_Print.To_Greyscale (OpenMV.LCD_Shield.Bitmap.all,
                                                  Apply_Threshol => True);
@@ -86,7 +81,12 @@ begin
          when Print =>
 
             --  The button was released so we print the image
-            Print (OpenMV.LCD_Shield.Bitmap.all);
+            if Mode_Button.Set then
+               Print_With_Grayscale (OpenMV.LCD_Shield.Bitmap.all);
+            else
+               Print_With_Dithering (OpenMV.LCD_Shield.Bitmap.all);
+            end if;
+
             Mode := Live;
       end case;
    end loop;

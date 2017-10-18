@@ -11,7 +11,10 @@ package Greyscale_And_Print is
    procedure To_Greyscale (BM             : in out HAL.Bitmap.Bitmap_Buffer'Class;
                            Apply_Threshol : Boolean := False);
 
-   procedure Print (Pict : HAL.Bitmap.Bitmap_Buffer'Class)
+   procedure Print_With_Grayscale (Pict : HAL.Bitmap.Bitmap_Buffer'Class)
+     with Pre => Initialized;
+
+   procedure Print_With_Dithering (Pict : HAL.Bitmap.Bitmap_Buffer'Class)
      with Pre => Initialized;
 
    Threshold_1 : constant := 25;
